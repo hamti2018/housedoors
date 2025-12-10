@@ -415,7 +415,7 @@
 
         <div class="form-group">
           <label>Аванс (₽)</label>
-          <input v-model.number="advance" min="0" placeholder="0" type="number">
+          <input v-model.number="prepayment" min="0" placeholder="0" type="number">
         </div>
       </div>
 
@@ -431,9 +431,9 @@
           <span class="summary-value">{{ discountAmount.toFixed(2) }} ₽</span>
         </div>
 
-        <div v-if="advance > 0" class="summary-row">
+        <div v-if="prepayment > 0" class="summary-row">
           <span class="summary-label">Аванс:</span>
-          <span class="summary-value">{{ advance.toFixed(2) }} ₽</span>
+          <span class="summary-value">{{ prepayment.toFixed(2) }} ₽</span>
         </div>
 
         <div class="summary-row total">
@@ -485,7 +485,7 @@
           positions: [],
           priceType: 'retail',
           discount: 0,
-          advance: 0,
+          prepayment: 0,
           nextPositionId: 1,
           tg: null
         };
@@ -506,7 +506,7 @@
         },
 
         totalAmount() {
-          return this.sumNoDiscount - this.discountAmount - this.advance;
+          return this.sumNoDiscount - this.discountAmount - this.prepayment;
         }
       },
 
@@ -566,7 +566,6 @@
           }
 
           // Если кэша нет, загружаем с сервера
-          console.log('Загрузка товаров с сервера:', this.apiUrl);
           const res = await fetch(`${this.apiUrl}?type=categories`);
           const json = await res.json();
 
@@ -668,7 +667,10 @@
             sumNoDiscount: this.sumNoDiscount,
             discountSum: this.discountAmount,
             total: this.totalAmount,
+            prepayment: this.prepayment
           }
+
+
 
           if (this.tg?.sendData) {
             this.tg.sendData(JSON.stringify(invoiceData));
