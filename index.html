@@ -1,1 +1,682 @@
+<!DOCTYPE html>
+<html lang="ru">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Дом дверей и ламината</title>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    :root {
+      --tg-bg: #ffffff;
+      --tg-text: #000000;
+      --tg-hint: #999999;
+      --tg-button: #0088cc;
+      --tg-button-text: #ffffff;
+      --tg-secondary-bg: #f5f5f5;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--tg-bg);
+      color: var(--tg-text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    #app {
+      max-width: 100%;
+    }
+
+    .logo {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      max-width: 120px;
+      height: auto;
+    }
+
+    .section {
+      background: var(--tg-secondary-bg);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .section-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: var(--tg-text);
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--tg-hint);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--tg-secondary-bg);
+      border-radius: 6px;
+      font-size: 14px;
+      background: var(--tg-bg);
+      color: var(--tg-text);
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--tg-button);
+      box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.1);
+    }
+
+    .btn {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      background: var(--tg-button);
+      color: var(--tg-button-text);
+    }
+
+    .btn-primary:active {
+      opacity: 0.8;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .btn-group .btn {
+      flex: 1;
+      margin: 0;
+      border: 2px solid var(--tg-button);
+      background: transparent;
+      color: var(--tg-button);
+    }
+
+    .btn-group .btn.active {
+      background: var(--tg-button);
+      color: var(--tg-button-text);
+    }
+
+    .position {
+      background: var(--tg-bg);
+      border: 1px solid var(--tg-secondary-bg);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .position-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .position-title {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .btn-delete {
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-delete:active {
+      opacity: 0.8;
+    }
+
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--tg-bg);
+      border: 1px solid var(--tg-secondary-bg);
+      border-radius: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+      margin-top: 4px;
+    }
+
+    .search-results-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--tg-secondary-bg);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .search-results-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-results-item:active {
+      background: var(--tg-secondary-bg);
+    }
+
+    .search-results-price {
+      color: var(--tg-hint);
+      font-weight: 600;
+    }
+
+    .position-search-wrapper {
+      position: relative;
+    }
+
+    .summary {
+      background: var(--tg-bg);
+      border: 1px solid var(--tg-secondary-bg);
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .summary-row.total {
+      font-size: 16px;
+      font-weight: 600;
+      padding-top: 8px;
+      border-top: 1px solid var(--tg-secondary-bg);
+      margin-top: 8px;
+    }
+
+    .summary-label {
+      color: var(--tg-hint);
+    }
+
+    .summary-value {
+      font-weight: 600;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--tg-hint);
+      padding: 20px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .section {
+        padding: 12px;
+      }
+
+      .btn {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      .logo img {
+        max-width: 100px;
+      }
+    }
+
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .loader-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader-text {
+      color: white;
+      margin-top: 15px;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- Загрузка -->
+    <div v-if="isLoading" class="loader-overlay">
+      <div>
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Загрузка товаров...</div>
+      </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div v-if="!isLoading">
+      <!-- Логотип -->
+      <div class="logo">
+        <img src="./logo.svg" alt="Логотип">
+      </div>
+
+      <!-- Данные покупателя -->
+      <div class="section">
+        <div class="section-title">Данные покупателя</div>
+
+        <div class="form-group">
+          <label>ФИО покупателя</label>
+          <input v-model="buyer.name" placeholder="Введите ФИО" type="text">
+        </div>
+
+        <div class="form-group">
+          <label>Адрес</label>
+          <input v-model="buyer.address" placeholder="Введите адрес" type="text">
+        </div>
+
+        <div class="form-group">
+          <label>Телефон</label>
+          <input v-model="buyer.phone" placeholder="Введите телефон" type="tel">
+        </div>
+      </div>
+
+      <!-- Тип цены -->
+      <div class="section">
+        <div class="section-title">Тип цены</div>
+        <div class="btn-group">
+          <button class="btn" :class="{ active: priceType === 'retail' }" @click="priceType = 'retail'">
+            💰 Розничная
+          </button>
+          <button class="btn" :class="{ active: priceType === 'wholesale' }" @click="priceType = 'wholesale'">
+            📦 Оптовая
+          </button>
+        </div>
+      </div>
+
+      <!-- Позиции товаров -->
+      <div class="section">
+        <div class="section-title">Товары ({{ positions.length }})</div>
+
+        <div v-for="(position, index) in positions" :key="position.id" class="position">
+          <div class="position-header">
+            <span class="position-title">Позиция {{ index + 1 }}</span>
+            <button class="btn-delete" @click="removePosition(index)">✕</button>
+          </div>
+
+          <div class="form-group position-search-wrapper">
+            <label>Товар</label>
+            <input v-model="position.search" @input="searchProducts(index)" placeholder="Поиск товара..." type="text"
+              autocomplete="off">
+
+            <div v-if="position.searchResults.length > 0" class="search-results">
+              <div v-for="product in position.searchResults" :key="product.id" class="search-results-item"
+                @click="selectProduct(index, product)">
+                <span>{{ product.name }}</span>
+                <span class="search-results-price">{{ getPriceByType(product) }} ₽</span>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="position.product" class="form-group">
+            <label>Выбранный товар</label>
+            <input v-model="position.product.name" disabled type="text">
+          </div>
+
+          <div class="form-group">
+            <label>Количество</label>
+            <input v-model.number="position.qty" min="1" placeholder="1" type="number">
+          </div>
+
+          <div v-if="position.product" class="form-group">
+            <label>Цена за единицу</label>
+            <input :value="getPriceByType(position.product)" disabled type="text">
+          </div>
+
+          <div v-if="position.product"
+            style="padding: 8px; background: var(--tg-secondary-bg); border-radius: 6px; text-align: right; font-weight: 600; font-size: 14px;">
+            Сумма: {{ (getPriceByType(position.product) * position.qty).toFixed(2) }} ₽
+          </div>
+        </div>
+
+        <button class="btn btn-primary" @click="addPosition">+ Добавить позицию</button>
+      </div>
+
+      <!-- Скидка и аванс -->
+      <div v-if="positions.length > 0" class="section">
+        <div class="form-group">
+          <label>Скидка (%)</label>
+          <input v-model.number="discount" min="0" max="100" placeholder="0" type="number">
+        </div>
+
+        <div class="form-group">
+          <label>Аванс (₽)</label>
+          <input v-model.number="advance" min="0" placeholder="0" type="number">
+        </div>
+      </div>
+
+      <!-- Итоги -->
+      <div v-if="positions.length > 0" class="summary">
+        <div class="summary-row">
+          <span class="summary-label">Сумма без скидки:</span>
+          <span class="summary-value">{{ sumNoDiscount.toFixed(2) }} ₽</span>
+        </div>
+
+        <div v-if="discountAmount > 0" class="summary-row">
+          <span class="summary-label">Скидка ({{ discount }}%):</span>
+          <span class="summary-value">{{ discountAmount.toFixed(2) }} ₽</span>
+        </div>
+
+        <div v-if="advance > 0" class="summary-row">
+          <span class="summary-label">Аванс:</span>
+          <span class="summary-value">{{ advance.toFixed(2) }} ₽</span>
+        </div>
+
+        <div class="summary-row total">
+          <span>К оплате:</span>
+          <span>{{ totalAmount.toFixed(2) }} ₽</span>
+        </div>
+      </div>
+
+      <!-- Кнопки действий -->
+      <div class="section">
+        <button v-if="positions.length > 0" class="btn btn-primary" @click="generateInvoice">
+          📄 Создать накладную
+        </button>
+        <div v-else class="empty">
+          Добавьте товары для создания накладной
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+
+    // Функция для получения GET параметра
+    function getUrlParam(param) {
+      const params = new URLSearchParams(window.location.search);
+      const encoded = params.get('start');
+
+      try {
+        const decoded = atob(encoded);
+        return decoded
+      } catch (e) { alert(e) }
+    }
+
+    createApp({
+      data() {
+        return {
+          isLoading: true,
+          products: [],
+          apiUrl: getUrlParam(),
+          cacheKey: 'products_cache',
+          cacheTtl: 3600000, // 1 час в миллисекундах
+          buyer: {
+            name: '',
+            address: '',
+            phone: ''
+          },
+          positions: [],
+          priceType: 'retail',
+          discount: 0,
+          advance: 0,
+          nextPositionId: 1,
+          tg: null
+        };
+      },
+
+      computed: {
+        sumNoDiscount() {
+          return this.positions.reduce((sum, pos) => {
+            if (pos.product) {
+              return sum + (this.getPriceByType(pos.product) * pos.qty);
+            }
+            return sum;
+          }, 0);
+        },
+
+        discountAmount() {
+          return this.sumNoDiscount * (this.discount / 100);
+        },
+
+        totalAmount() {
+          return this.sumNoDiscount - this.discountAmount - this.advance;
+        }
+      },
+
+      mounted() {
+        this.initApp();
+      },
+
+      methods: {
+        // Функция для получения кэша
+        getCachedProducts() {
+          try {
+            const cached = localStorage.getItem(this.cacheKey);
+            if (!cached) return null;
+
+            const { data, timestamp } = JSON.parse(cached);
+            const now = Date.now();
+
+            // Проверяем актуальность кэша
+            if (now - timestamp > this.cacheTtl) {
+              localStorage.removeItem(this.cacheKey);
+              return null;
+            }
+
+            return data;
+          } catch (e) {
+            console.error('Ошибка при чтении кэша:', e);
+            return null;
+          }
+        },
+
+        // Функция для сохранения кэша
+        setCachedProducts(data) {
+          try {
+            localStorage.setItem(this.cacheKey, JSON.stringify({
+              data,
+              timestamp: Date.now()
+            }));
+          } catch (e) {
+            console.error('Ошибка при сохранении кэша:', e);
+          }
+        },
+
+        // Загрузка товаров с кэшированием
+        async loadCategories() {
+          // Сначала проверяем кэш
+          const cached = this.getCachedProducts();
+          if (cached) {
+            console.log('Товары загружены из кэша');
+            this.products = cached.map((item, i) => ({
+              id: i,
+              name: item.name,
+              retail: item.retail,
+              wholesale: item.wholesale,
+              purchase: item.purchase
+            }));
+            return;
+          }
+
+          // Если кэша нет, загружаем с сервера
+          console.log('Загрузка товаров с сервера:', this.apiUrl);
+          const res = await fetch(`${this.apiUrl}?type=categories`);
+          const json = await res.json();
+
+          // Сохраняем в кэш
+          this.setCachedProducts(json);
+
+          // Добавляем в массив products
+          this.products = json.map((item, i) => ({
+            id: i,
+            name: item.name,
+            retail: item.retail,
+            wholesale: item.wholesale,
+            purchase: item.purchase
+          }));
+        },
+
+        async initApp() {
+          // Загружаем категории товаров (с кэшем)
+          await this.loadCategories();
+
+          // Скрываем загрузчик
+          this.isLoading = false;
+
+          if (window.Telegram && Telegram.WebApp) {
+            this.tg = Telegram.WebApp;
+            this.tg.ready();
+            this.applyTheme();
+            this.tg.onThemeChanged?.(() => {
+              this.applyTheme();
+            });
+          }
+          this.addPosition();
+        },
+
+        applyTheme() {
+          const t = this.tg?.themeParams;
+          if (!t) return;
+
+          const root = document.documentElement;
+          root.style.setProperty('--tg-bg', t.bg_color || '#ffffff');
+          root.style.setProperty('--tg-text', t.text_color || '#000000');
+          root.style.setProperty('--tg-hint', t.hint_color || '#999999');
+          root.style.setProperty('--tg-button', t.button_color || '#0088cc');
+          root.style.setProperty('--tg-button-text', t.button_text_color || '#ffffff');
+          root.style.setProperty('--tg-secondary-bg', t.secondary_bg_color || '#f5f5f5');
+        },
+
+        addPosition() {
+          this.positions.push({
+            id: this.nextPositionId++,
+            product: null,
+            search: '',
+            searchResults: [],
+            qty: 1
+          });
+        },
+
+        removePosition(index) {
+          this.positions.splice(index, 1);
+        },
+
+        searchProducts(index) {
+          const query = this.positions[index].search.toLowerCase();
+          if (query.length === 0) {
+            this.positions[index].searchResults = [];
+            return;
+          }
+          this.positions[index].searchResults = this.products.filter(p =>
+            p.name.toLowerCase().includes(query)
+          );
+        },
+
+        selectProduct(index, product) {
+          this.positions[index].product = product;
+          this.positions[index].search = '';
+          this.positions[index].searchResults = [];
+        },
+
+        getPriceByType(product) {
+          return product[this.priceType];
+        },
+
+        generateInvoice() {
+          const invoiceData = {
+            number: Math.floor(Math.random() * 10000),
+            date: new Date().toLocaleDateString('ru-RU'),
+            client: {
+              name: this.buyer.name || 'Покупатель',
+              address: this.buyer.address || 'Адрес не указан',
+              phone: this.buyer.phone || 'Номер не указан'
+            },
+            items: this.positions
+              .filter(p => p.product)
+              .map(p => ({
+                name: p.product.name,
+                qty: p.qty,
+                price: this.getPriceByType(p.product)
+              })),
+            sumNoDiscount: this.sumNoDiscount,
+            discountSum: this.discountAmount,
+            total: this.totalAmount,
+          }
+
+          if (this.tg?.sendData) {
+            this.tg.sendData(JSON.stringify(invoiceData));
+          }
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+
+</html>
