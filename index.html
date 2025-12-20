@@ -415,7 +415,7 @@
       <!-- Скидка и аванс -->
       <div v-if="positions.length > 0" class="section">
         <div class="form-group">
-          <label>Скидка (%)</label>
+          <label>Скидка (₽)</label>
           <input v-model.number="discount" min="0" max="100" placeholder="0" type="number">
         </div>
 
@@ -433,7 +433,7 @@
         </div>
 
         <div v-if="discountAmount > 0" class="summary-row">
-          <span class="summary-label">Скидка ({{ discount }}%):</span>
+          <span class="summary-label">Скидка ({{ discount }} ₽):</span>
           <span class="summary-value">{{ discountAmount.toFixed(2) }} ₽</span>
         </div>
 
@@ -462,6 +462,8 @@
 
   <script>
     const { createApp } = Vue;
+
+
 
 
     // Функция для получения GET параметра
@@ -508,12 +510,32 @@
         },
 
         discountAmount() {
-          return this.sumNoDiscount * (this.discount / 100);
+          return this.sumNoDiscount - this.discount;
         },
 
         totalAmount() {
           return this.sumNoDiscount - this.discountAmount - this.prepayment;
-        }
+        },
+
+        sumPurchase() {
+          return this.positions.reduce((sum, pos) => {
+            if (pos.product) {
+              return sum + (pos.product.purchase * pos.qty);
+            }
+            return sum;
+          }, 0);
+        },
+
+        sumNoDiscount1() {
+          return this.positions.reduce((sum, pos) => {
+            if (pos.product) {
+              return sum + (this.getPriceByType(pos.product) * pos.qty);
+            }
+            return sum;
+          }, 0);
+        },
+
+
       },
 
       mounted() {
@@ -670,6 +692,7 @@
                 qty: p.qty,
                 price: this.getPriceByType(p.product)
               })),
+            sumPurchase: this.sumPurchase,
             sumNoDiscount: this.sumNoDiscount,
             discountSum: this.discountAmount,
             total: this.totalAmount,
