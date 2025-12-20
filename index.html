@@ -509,12 +509,8 @@
           }, 0);
         },
 
-        discountAmount() {
-          return this.sumNoDiscount - this.discount;
-        },
-
         totalAmount() {
-          return this.sumNoDiscount - this.discountAmount - this.prepayment;
+          return this.sumNoDiscount - this.discount - this.prepayment;
         },
 
         sumPurchase() {
@@ -525,17 +521,6 @@
             return sum;
           }, 0);
         },
-
-        sumNoDiscount1() {
-          return this.positions.reduce((sum, pos) => {
-            if (pos.product) {
-              return sum + (this.getPriceByType(pos.product) * pos.qty);
-            }
-            return sum;
-          }, 0);
-        },
-
-
       },
 
       mounted() {
