@@ -362,6 +362,11 @@
             📦 Оптовая
           </button>
         </div>
+        <div class="btn-group">
+          <button class="btn" :class="{ active: purchaseDiscount }" @click="purchaseDiscount = !purchaseDiscount">
+            🏷️ Закуп −14%
+          </button>
+        </div>
       </div>
 
       <!-- Позиции товаров -->
@@ -485,6 +490,7 @@
           apiUrl: getUrlParam(),
           cacheKey: 'products_cache',
           cacheTtl: 3600000, // 1 час в миллисекундах
+          purchaseDiscount: false,
           buyer: {
             name: '',
             address: '',
@@ -514,12 +520,18 @@
         },
 
         sumPurchase() {
-          return this.positions.reduce((sum, pos) => {
+          const sum = this.positions.reduce((sum, pos) => {
             if (pos.product) {
               return sum + (pos.product.purchase * pos.qty);
             }
             return sum;
           }, 0);
+
+          if (this.purchaseDiscount) {
+            return sum * 0.86
+          }
+
+          return sum
         },
       },
 
@@ -679,7 +691,7 @@
               })),
             sumPurchase: this.sumPurchase,
             sumNoDiscount: this.sumNoDiscount,
-            discountSum: this.discount,
+            discountSum: +this.discount,
             total: this.totalAmount,
             prepayment: this.prepayment
           }
