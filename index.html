@@ -135,7 +135,9 @@
 
 
     .btn-mini {
-      position: absolute;
+      /* position: absolute; */
+      margin: 1px;
+      align-content: flex-start;
       top: 6px;
       left: 6px;
       padding: 4px 6px;
@@ -426,10 +428,22 @@
                  text-align:right;">
 
 
-          <button class="btn-mini" :class="{ active: position.purchaseDiscount }"
-            @click="position.purchaseDiscount = !position.purchaseDiscount">
-            🏷️ −14%
-          </button>
+          <div class="btn-group">
+            <button class="btn-mini"
+              @click="position.purchaseDiscountPercent = Math.max(0, position.purchaseDiscountPercent - 1)">−</button>
+
+
+            <button class="btn-mini" :class="{ active: position.purchaseDiscount }"
+              @click="position.purchaseDiscount = !position.purchaseDiscount">
+              🏷️ −{{ position.purchaseDiscountPercent }}%
+            </button>
+
+
+
+            <button class="btn-mini"
+              @click="position.purchaseDiscountPercent = Math.min(100, position.purchaseDiscountPercent + 1)">+</button>
+          </div>
+
           Сумма:
           {{ (getPriceByType(position.product) * position.qty).toFixed(2) }} ₽
         </div>
@@ -544,8 +558,8 @@
           const sum = this.positions.reduce((sum, pos) => {
             if (!pos.product) return sum;
 
-            const price = pos.product.purchase * (pos.purchaseDiscount ? 0.86 : 1);
-            return sum + price * pos.qty;
+            const k = 1 - pos.purchaseDiscountPercent / 100;
+            return sum + pos.product.purchase * k * pos.qty;
           }, 0);
 
           if (this.purchaseDiscount) {
@@ -666,7 +680,7 @@
             search: '',
             searchResults: [],
             qty: 1,
-            purchaseDiscount: false // индивидуально для позиции
+            purchaseDiscountPercent: 14,
           });
         },
 
