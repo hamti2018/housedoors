@@ -133,6 +133,25 @@
       color: var(--tg-button-text);
     }
 
+
+    .btn-mini {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      padding: 4px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      border: 1px solid var(--tg-button);
+      background: transparent;
+      color: var(--tg-button);
+      cursor: pointer;
+    }
+
+    .btn-mini.active {
+      background: var(--tg-button);
+      color: var(--tg-button-text);
+    }
+
     .position {
       background: var(--tg-bg);
       border: 1px solid var(--tg-secondary-bg);
@@ -362,107 +381,110 @@
             📦 Оптовая
           </button>
         </div>
-        <div class="btn-group">
-          <button class="btn" :class="{ active: purchaseDiscount }" @click="purchaseDiscount = !purchaseDiscount">
-            🏷️ Закуп −14%
-          </button>
-        </div>
-      </div>
-
-      <!-- Позиции товаров -->
-      <div class="section">
-        <div class="section-title">Товары ({{ positions.length }})</div>
-
-        <div v-for="(position, index) in positions" :key="position.id" class="position">
-          <div class="position-header">
-            <span class="position-title">Позиция {{ index + 1 }}</span>
-            <button class="btn-delete" @click="removePosition(index)">✕</button>
-          </div>
-
-          <div class="form-group position-search-wrapper">
-            <label>Товар</label>
-            <input v-model="position.search" @input="searchProducts(index)" placeholder="Поиск товара..." type="text"
-              autocomplete="off">
-
-            <div v-if="position.searchResults.length > 0" class="search-results">
-              <div v-for="product in position.searchResults" :key="product.id" class="search-results-item"
-                @click="selectProduct(index, product)">
-                <span>{{ product.name }}</span>
-                <span class="search-results-price">{{ getPriceByType(product) }} ₽</span>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="position.product" class="form-group">
-            <label>Выбранный товар</label>
-            <input v-model="position.product.name" disabled type="text">
-          </div>
-
-          <div class="form-group">
-            <label>Количество</label>
-            <input v-model.number="position.qty" min="1" placeholder="1" type="number">
-          </div>
-
-          <div v-if="position.product" class="form-group">
-            <label>Цена за единицу</label>
-            <input :value="getPriceByType(position.product)" disabled type="text">
-          </div>
-
-          <div v-if="position.product"
-            style="padding: 8px; background: var(--tg-secondary-bg); border-radius: 6px; text-align: right; font-weight: 600; font-size: 14px;">
-            Сумма: {{ (getPriceByType(position.product) * position.qty).toFixed(2) }} ₽
-          </div>
-        </div>
-
-        <button class="btn btn-primary" @click="addPosition">+ Добавить позицию</button>
-      </div>
-
-      <!-- Скидка и аванс -->
-      <div v-if="positions.length > 0" class="section">
-        <div class="form-group">
-          <label>Скидка (₽)</label>
-          <input v-model.number="discount" min="0" max="100" placeholder="0" type="number">
-        </div>
-
-        <div class="form-group">
-          <label>Аванс (₽)</label>
-          <input v-model.number="prepayment" min="0" placeholder="0" type="number">
-        </div>
-      </div>
-
-      <!-- Итоги -->
-      <div v-if="positions.length > 0" class="summary">
-        <div class="summary-row">
-          <span class="summary-label">Сумма без скидки:</span>
-          <span class="summary-value">{{ sumNoDiscount.toFixed(2) }} ₽</span>
-        </div>
-
-        <div v-if="discountAmount > 0" class="summary-row">
-          <span class="summary-label">Скидка ({{ discount }} ₽):</span>
-          <span class="summary-value">{{ discountAmount.toFixed(2) }} ₽</span>
-        </div>
-
-        <div v-if="prepayment > 0" class="summary-row">
-          <span class="summary-label">Аванс:</span>
-          <span class="summary-value">{{ prepayment.toFixed(2) }} ₽</span>
-        </div>
-
-        <div class="summary-row total">
-          <span>К оплате:</span>
-          <span>{{ totalAmount.toFixed(2) }} ₽</span>
-        </div>
-      </div>
-
-      <!-- Кнопки действий -->
-      <div class="section">
-        <button v-if="positions.length > 0" class="btn btn-primary" @click="generateInvoice">
-          📄 Создать накладную
-        </button>
-        <div v-else class="empty">
-          Добавьте товары для создания накладной
-        </div>
       </div>
     </div>
+
+    <!-- Позиции товаров -->
+    <div class="section">
+      <div class="section-title">Товары ({{ positions.length }})</div>
+
+      <div v-for="(position, index) in positions" :key="position.id" class="position">
+        <div class="position-header">
+          <span class="position-title">Позиция {{ index + 1 }}</span>
+          <button class="btn-delete" @click="removePosition(index)">✕</button>
+        </div>
+
+        <div class="form-group position-search-wrapper">
+          <label>Товар</label>
+          <input v-model="position.search" @input="searchProducts(index)" placeholder="Поиск товара..." type="text"
+            autocomplete="off">
+
+          <div v-if="position.searchResults.length > 0" class="search-results">
+            <div v-for="product in position.searchResults" :key="product.id" class="search-results-item"
+              @click="selectProduct(index, product)">
+              <span>{{ product.name }}</span>
+              <span class="search-results-price">{{ getPriceByType(product) }} ₽</span>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="position.product" class="form-group">
+          <label>Выбранный товар</label>
+          <input v-model="position.product.name" disabled type="text">
+        </div>
+
+        <div class="form-group">
+          <label>Количество</label>
+          <input v-model.number="position.qty" min="1" placeholder="1" type="number">
+        </div>
+        <div v-if="position.product" style="position:relative;
+                 padding:8px;
+                 background:var(--tg-secondary-bg);
+                 border-radius:6px;
+                 font-weight:600;
+                 font-size:14px;
+                 text-align:right;">
+
+
+          <button class="btn-mini" :class="{ active: position.purchaseDiscount }"
+            @click="position.purchaseDiscount = !position.purchaseDiscount">
+            🏷️ −14%
+          </button>
+          Сумма:
+          {{ (getPriceByType(position.product) * position.qty).toFixed(2) }} ₽
+        </div>
+
+      </div>
+
+      <button class="btn btn-primary" @click="addPosition">+ Добавить позицию</button>
+    </div>
+
+    <!-- Скидка и аванс -->
+    <div v-if="positions.length > 0" class="section">
+      <div class="form-group">
+        <label>Скидка (₽)</label>
+        <input v-model.number="discount" min="0" max="100" placeholder="0" type="number">
+      </div>
+
+      <div class="form-group">
+        <label>Аванс (₽)</label>
+        <input v-model.number="prepayment" min="0" placeholder="0" type="number">
+      </div>
+    </div>
+
+    <!-- Итоги -->
+    <div v-if="positions.length > 0" class="summary">
+      <div class="summary-row">
+        <span class="summary-label">Сумма без скидки:</span>
+        <span class="summary-value">{{ sumNoDiscount.toFixed(2) }} ₽</span>
+      </div>
+
+      <div v-if="discountAmount > 0" class="summary-row">
+        <span class="summary-label">Скидка ({{ discount }} ₽):</span>
+        <span class="summary-value">{{ discountAmount.toFixed(2) }} ₽</span>
+      </div>
+
+      <div v-if="prepayment > 0" class="summary-row">
+        <span class="summary-label">Аванс:</span>
+        <span class="summary-value">{{ prepayment.toFixed(2) }} ₽</span>
+      </div>
+
+      <div class="summary-row total">
+        <span>К оплате:</span>
+        <span>{{ totalAmount.toFixed(2) }} ₽</span>
+      </div>
+    </div>
+
+    <!-- Кнопки действий -->
+    <div class="section">
+      <button v-if="positions.length > 0" class="btn btn-primary" @click="generateInvoice">
+        📄 Создать накладную
+      </button>
+      <div v-else class="empty">
+        Добавьте товары для создания накладной
+      </div>
+    </div>
+  </div>
   </div>
 
   <script>
@@ -490,7 +512,6 @@
           apiUrl: getUrlParam(),
           cacheKey: 'products_cache',
           cacheTtl: 3600000, // 1 час в миллисекундах
-          purchaseDiscount: false,
           buyer: {
             name: '',
             address: '',
@@ -521,10 +542,10 @@
 
         sumPurchase() {
           const sum = this.positions.reduce((sum, pos) => {
-            if (pos.product) {
-              return sum + (pos.product.purchase * pos.qty);
-            }
-            return sum;
+            if (!pos.product) return sum;
+
+            const price = pos.product.purchase * (pos.purchaseDiscount ? 0.86 : 1);
+            return sum + price * pos.qty;
           }, 0);
 
           if (this.purchaseDiscount) {
@@ -644,7 +665,8 @@
             product: null,
             search: '',
             searchResults: [],
-            qty: 1
+            qty: 1,
+            purchaseDiscount: false // индивидуально для позиции
           });
         },
 
@@ -695,6 +717,9 @@
             total: this.totalAmount,
             prepayment: this.prepayment
           }
+
+
+          console.log(invoiceData)
 
 
 
