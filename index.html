@@ -506,7 +506,7 @@
 
         <div class="summary-row total">
           <span>К оплате:</span>
-          <span>{{ totalAmount.toFixed(2) }} ₽</span>
+          <span>{{ (totalAmount - prepayment).toFixed(2) }} ₽</span>
         </div>
       </div>
 
